@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "main": "server/server.js",
   "scripts": {
-    "pretest": "jshint ."
+    "test":"gulp test"
   },
   "dependencies": {
     "compression": "^1.0.3",
@@ -17,6 +17,7 @@
     "loopback-explorer": "^1.1.0"
   },
   "devDependencies": {
+    "gulp": "^3.8.10",
     "jshint": "^2.5.6"
   }
 }
