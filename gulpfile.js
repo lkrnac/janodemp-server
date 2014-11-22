@@ -1,7 +1,32 @@
 'use strict';
 
 var gulp = require('gulp');
+var plugins = require('gulp-load-plugins')();
+var rimraf = require('rimraf');
 
-gulp.task('test', function(){
+var packageJson = require('./package');
 
+var paths = {
+  dist: 'dist',
+  package: [
+      './!(node_modules|dist|soapui)/**/*',
+      'package.json'
+    ]
+};
+
+gulp.task('test', function () {
+
+});
+
+gulp.task('clean', function (callback) {
+  rimraf('./' + paths.dist, callback);
+});
+
+gulp.task('package', ['clean'], function () {
+  return gulp.src(paths.package)
+    .pipe(plugins.ignore('node_modules/**'))
+    .pipe(plugins.ignore(paths.dist + '/**'))
+    .pipe(plugins.ignore('soapui/**'))
+    .pipe(plugins.zip(packageJson.name + '.zip'))
+    .pipe(gulp.dest(paths.dist));
 });
