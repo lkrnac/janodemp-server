@@ -6,6 +6,8 @@ var app = module.exports = loopback();
 // Set up the /favicon.ico
 app.use(loopback.favicon());
 
+app.use(loopback.logger('dev'));
+
 // request pre-processing middleware
 app.use(loopback.compress());
 
@@ -29,9 +31,9 @@ app.use(loopback.urlNotFound());
 // The ultimate error handler.
 app.use(loopback.errorHandler());
 
-app.start = function() {
+app.start = function () {
   // start the web server
-  return app.listen(function() {
+  return app.listen(function () {
     app.emit('started');
     console.log('Web server listening at: %s', app.get('url'));
   });
