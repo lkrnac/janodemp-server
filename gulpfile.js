@@ -3,6 +3,7 @@
 var gulp = require('gulp');
 var plugins = require('gulp-load-plugins')();
 var rimraf = require('rimraf');
+var stylish = require('jshint-stylish');
 
 var paths = {
   dist: 'dist',
@@ -17,7 +18,7 @@ var paths = {
 gulp.task('build', function () {
   gulp.src([paths.server, paths.serverTests])
     .pipe(plugins.jshint())
-    .pipe(plugins.jshint.reporter(plugins.stylish))
+    .pipe(plugins.jshint.reporter(stylish))
     .pipe(plugins.jshint.reporter('fail'));
 });
 
