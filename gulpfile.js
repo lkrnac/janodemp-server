@@ -4,8 +4,6 @@ var gulp = require('gulp');
 var plugins = require('gulp-load-plugins')();
 var rimraf = require('rimraf');
 
-var packageJson = require('./package');
-
 var paths = {
   dist: 'dist',
   package: [
@@ -24,6 +22,6 @@ gulp.task('clean', function (callback) {
 
 gulp.task('package', ['clean'], function () {
   return gulp.src(paths.package)
-    .pipe(plugins.zip(packageJson.name + '.zip'))
+    .pipe(plugins.zip('janodemp.zip'))
     .pipe(gulp.dest(paths.dist));
 });
