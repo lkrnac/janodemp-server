@@ -6,13 +6,22 @@ var rimraf = require('rimraf');
 
 var paths = {
   dist: 'dist',
+  server: 'server/**/*.js',
+  serverTests: 'server/**/*.js',
   package: [
       './!(node_modules|dist|soapui)/**/*',
       'package.json'
     ]
 };
 
-gulp.task('test', function () {
+gulp.task('build', function () {
+  gulp.src([paths.server, paths.serverTests])
+    .pipe(plugins.jshint())
+    .pipe(plugins.jshint.reporter(plugins.stylish))
+    .pipe(plugins.jshint.reporter('fail'));
+});
+
+gulp.task('test', ['build'], function () {
 
 });
 
@@ -25,3 +34,5 @@ gulp.task('package', ['clean'], function () {
     .pipe(plugins.zip('janodemp.zip'))
     .pipe(gulp.dest(paths.dist));
 });
+
+gulp.task('default', ['test']);
