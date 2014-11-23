@@ -24,9 +24,6 @@ gulp.task('clean', function (callback) {
 
 gulp.task('package', ['clean'], function () {
   return gulp.src(paths.package)
-    .pipe(plugins.ignore('node_modules/**'))
-    .pipe(plugins.ignore(paths.dist + '/**'))
-    .pipe(plugins.ignore('soapui/**'))
     .pipe(plugins.zip(packageJson.name + '.zip'))
     .pipe(gulp.dest(paths.dist));
 });
