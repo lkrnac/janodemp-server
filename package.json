@@ -2,6 +2,7 @@
   "name": "janodemp",
   "version": "0.0.0",
   "main": "server/server.js",
+  "license": "GNU GPL v3",
   "scripts": {
     "test": "gulp test",
     "build": "gulp package"
