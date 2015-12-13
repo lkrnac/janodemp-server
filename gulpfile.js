@@ -65,4 +65,11 @@ gulp.task('package', ['clean'], function () {
     .pipe(gulp.dest(paths.dist));
 });
 
-gulp.task('default', ['test']);
+gulp.task('checkError', ['test'], function () {
+  if (errorOccured) {
+    console.log('Error occured, exitting build process... ');
+    process.exit(1);
+  }
+});
+
+gulp.task('default', ['test', 'checkError']);
