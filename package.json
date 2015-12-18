@@ -1,5 +1,5 @@
 {
-  "name": "janodemp",
+  "name": "janodemp-server",
   "version": "0.0.0",
   "main": "server/server.js",
   "license": "GNU GPL v3",
