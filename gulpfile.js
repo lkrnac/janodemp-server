@@ -1,18 +1,19 @@
-'use strict';
+"use strict";
 
-var gulp = require('gulp');
-var plugins = require('gulp-load-plugins')();
-var rimraf = require('rimraf');
-var stylish = require('jshint-stylish');
+var gulp = require("gulp");
+var rimraf = require("rimraf");
+var eslint = require("gulp-eslint");
+var zip = require("gulp-zip");
+var plumber = require("gulp-plumber");
 
 var paths = {
-  dist: 'dist',
-  server: 'server/**/*.js',
-  serverTests: 'server/**/*.js',
+  dist: "dist",
+  server: "server/**/*.js",
+  serverTests: "server/**/*.js",
   package: [
-      './!(node_modules|dist|soapui)/**/*',
-      'package.json'
-    ]
+    "./!(node_modules|dist)/**/*",
+    "package.json"
+  ]
 };
 
 var errorOccured = false;
@@ -22,54 +23,60 @@ var errorOccured = false;
  * It is needed because gulp-plumber forces 0 error code
  * even when error occurs.
  */
-gulp.task('checkError', ['test'], function () {
+gulp.task("checkError", ["test"], function () {
   if (errorOccured) {
-    console.log('Err, distor occured, exitting build process... ');
+    //noinspection Eslint
+    console.log("Err, distor occured, exitting build process... ");
+    //noinspection Eslint
     process.exit(1);
   }
 });
 
 /**
  * Logs error into variable
+ * @returns {void}
  */
 var errorHandler = function () {
-  console.log('Error occured... ');
+  //noinspection Eslint
+  console.log("Error occured... ");
   errorOccured = true;
 };
 
-gulp.task('build', function () {
+gulp.task("build", function () {
   gulp.src([paths.server, paths.serverTests])
-    .pipe(plugins.plumber({
+    .pipe(plumber({
       errorHandler: errorHandler
     }))
-    .pipe(plugins.jshint())
-    .pipe(plugins.jshint.reporter(stylish))
-    .pipe(plugins.jshint.reporter('fail'));
+    .pipe(eslint())
+    .pipe(eslint.format())
+    .pipe(eslint.failAfterError());
 });
 
-gulp.task('test', ['build'], function () {
+gulp.task("test", ["build"], function () {
 
 });
 
-gulp.task('watch', function () {
-  gulp.watch([paths.server, paths.serverTests], ['test']);
+gulp.task("watch", function () {
+  gulp.watch([paths.server, paths.serverTests], ["test"]);
 });
 
-gulp.task('clean', function (callback) {
-  rimraf('./' + paths.dist, callback);
+gulp.task("clean", function (callback) {
+  rimraf("./" + paths.dist, callback);
 });
 
-gulp.task('package', ['clean'], function () {
+gulp.task("package", ["clean"], function () {
   return gulp.src(paths.package)
-    .pipe(plugins.zip('janodemp.zip'))
+    .pipe(zip("janodemp.zip"))
     .pipe(gulp.dest(paths.dist));
 });
 
-gulp.task('checkError', ['test'], function () {
+gulp.task("checkError", ["test"], function () {
   if (errorOccured) {
-    console.log('Error occured, exitting build process... ');
+    //noinspection Eslint
+    console.log("Error occured, exitting build process... ");
+    //noinspection Eslint
     process.exit(1);
   }
 });
 
-gulp.task('default', ['test', 'checkError']);
+gulp.task("default", ["test", "checkError"]);

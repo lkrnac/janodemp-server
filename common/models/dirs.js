@@ -1,3 +1,5 @@
-module.exports = function(Dirs) {
+"use strict";
+
+module.exports = function (dirs) {
 
 };
