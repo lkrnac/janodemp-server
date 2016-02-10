@@ -9,7 +9,7 @@ var plumber = require("gulp-plumber");
 var paths = {
   dist: "dist",
   server: "server/**/*.js",
-  serverTests: "server/**/*.js",
+  serverTests: "test/**/*.js",
   package: [
     "./!(node_modules|dist)/**/*",
     "package.json"
@@ -17,6 +17,7 @@ var paths = {
 };
 
 var errorOccured = false;
+
 /**
  * This task is here to exit from process with error code.
  * This way CI server knows that process failed.
@@ -25,10 +26,8 @@ var errorOccured = false;
  */
 gulp.task("checkError", ["test"], function () {
   if (errorOccured) {
-    //noinspection Eslint
-    console.log("Err, distor occured, exitting build process... ");
-    //noinspection Eslint
-    process.exit(1);
+    console.log("Err, distor occured, exitting build process... "); //eslint-disable-line no-console
+    process.exit(1); //eslint-disable-line no-process-exit
   }
 });
 
@@ -37,8 +36,7 @@ gulp.task("checkError", ["test"], function () {
  * @returns {void}
  */
 var errorHandler = function () {
-  //noinspection Eslint
-  console.log("Error occured... ");
+  console.log("Error occured... "); //eslint-disable-line no-console
   errorOccured = true;
 };
 
@@ -68,15 +66,6 @@ gulp.task("package", ["clean"], function () {
   return gulp.src(paths.package)
     .pipe(zip("janodemp.zip"))
     .pipe(gulp.dest(paths.dist));
-});
-
-gulp.task("checkError", ["test"], function () {
-  if (errorOccured) {
-    //noinspection Eslint
-    console.log("Error occured, exitting build process... ");
-    //noinspection Eslint
-    process.exit(1);
-  }
 });
 
 gulp.task("default", ["test", "checkError"]);
