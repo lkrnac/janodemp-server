@@ -69,6 +69,7 @@ gulp.task("coveralls", ["test", "checkError"], function () {
   return gulp.src("./coverage/lcov.info")
     .pipe(coveralls());
 });
+
 /**
  * This task is here to exit from process with error code.
  * This way CI server knows that process failed.
