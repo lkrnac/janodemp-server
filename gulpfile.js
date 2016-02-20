@@ -5,6 +5,7 @@ var eslint = require("gulp-eslint");
 var plumber = require("gulp-plumber");
 var mocha = require("gulp-mocha");
 var istanbul = require("gulp-istanbul");
+var coveralls = require("gulp-coveralls");
 
 var path = {
   dist: "dist",
@@ -64,6 +65,10 @@ gulp.task("watch", function () {
   gulp.watch([path.server, path.serverTests], ["test"]);
 });
 
+gulp.task("coveralls", ["test", "checkError"], function () {
+  return gulp.src("./coverage/lcov.info")
+    .pipe(coveralls());
+});
 /**
  * This task is here to exit from process with error code.
  * This way CI server knows that process failed.
@@ -78,3 +83,4 @@ gulp.task("checkError", ["test"], function () {
 });
 
 gulp.task("default", ["lint", "test", "checkError"]);
+gulp.task("build", ["default", "coveralls"]);
