@@ -37,7 +37,7 @@ gulp.task("lint", function () {
 });
 
 gulp.task("pre-test", function () {
-  return gulp.src([path.common, path.server])
+  return gulp.src([path.common, path.server, "!server/server.js"])
     .pipe(istanbul())
     .pipe(istanbul.hookRequire());
 });
@@ -47,7 +47,16 @@ gulp.task("test", ["pre-test"], function (cb) {
     .pipe(plumber({ errorHandler: errorHandler }))
     .pipe(mocha())
     .pipe(istanbul.writeReports())
-    //.pipe(istanbul.enforceThresholds({ thresholds: { global: 90 } }))
+    .pipe(istanbul.enforceThresholds({
+      thresholds: {
+        global: {
+          statements: 90,
+          branches: 50,
+          functions: 95,
+          lines: 90
+        }
+      }
+    }))
     .on("end", cb);
 });
 
