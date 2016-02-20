@@ -2,8 +2,7 @@
 
 module.exports = function (server) {
   // Install a `/` route that returns server status
-  /* eslint-disable new-cap */
-  var router = server.loopback.Router();
+  var router = server.loopback.Router(); //eslint-disable-line new-cap
   router.get("/", server.loopback.status());
   server.use(router);
 };

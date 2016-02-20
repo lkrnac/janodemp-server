@@ -1,14 +1,14 @@
 "use strict";
 
 var gulp = require("gulp");
-var rimraf = require("rimraf");
 var eslint = require("gulp-eslint");
-var zip = require("gulp-zip");
 var plumber = require("gulp-plumber");
+var mocha = require("gulp-mocha");
 
 var paths = {
   dist: "dist",
   server: "server/**/*.js",
+  common: "common/**/*.js",
   serverTests: "test/**/*.js",
   package: [
     "./!(node_modules|dist)/**/*",
@@ -40,8 +40,8 @@ var errorHandler = function () {
   errorOccured = true;
 };
 
-gulp.task("build", function () {
-  gulp.src([paths.server, paths.serverTests])
+gulp.task("lint", function () {
+  gulp.src([paths.common, paths.server, paths.serverTests])
     .pipe(plumber({
       errorHandler: errorHandler
     }))
@@ -50,22 +50,16 @@ gulp.task("build", function () {
     .pipe(eslint.failAfterError());
 });
 
-gulp.task("test", ["build"], function () {
-
+gulp.task("test", function () {
+  gulp.src(paths.serverTests)
+    .pipe(plumber({
+      errorHandler: errorHandler
+    }))
+    .pipe(mocha());
 });
 
 gulp.task("watch", function () {
   gulp.watch([paths.server, paths.serverTests], ["test"]);
 });
 
-gulp.task("clean", function (callback) {
-  rimraf("./" + paths.dist, callback);
-});
-
-gulp.task("package", ["clean"], function () {
-  return gulp.src(paths.package)
-    .pipe(zip("janodemp.zip"))
-    .pipe(gulp.dest(paths.dist));
-});
-
-gulp.task("default", ["test", "checkError"]);
+gulp.task("default", ["lint", "test", "checkError"]);

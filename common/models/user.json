@@ -1,14 +1,10 @@
 {
-  "name": "dirs",
-  "base": "PersistedModel",
+  "name": "user",
+  "base": "User",
   "idInjection": true,
-  "options": {
-    "validateUpsert": true
-  },
   "properties": {
-    "name": {
-      "type": "string",
-      "required": true
+    "username": {
+      "type": "string"
     }
   },
   "validations": [],
@@ -19,6 +15,13 @@
       "principalType": "ROLE",
       "principalId": "$everyone",
       "permission": "DENY"
+    },
+    {
+      "accessType": "EXECUTE",
+      "principalType": "ROLE",
+      "principalId": "$unauthenticated",
+      "permission": "ALLOW",
+      "property": "login"
     }
   ],
   "methods": {}
