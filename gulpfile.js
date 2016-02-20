@@ -4,6 +4,7 @@ var gulp = require("gulp");
 var eslint = require("gulp-eslint");
 var plumber = require("gulp-plumber");
 var mocha = require("gulp-mocha");
+var istanbul = require("gulp-istanbul");
 
 var path = {
   dist: "dist",
@@ -20,19 +21,6 @@ var path = {
 var errorOccured = false;
 
 /**
- * This task is here to exit from process with error code.
- * This way CI server knows that process failed.
- * It is needed because gulp-plumber forces 0 error code
- * even when error occurs.
- */
-gulp.task("checkError", ["test"], function () {
-  if (errorOccured) {
-    console.log("Err, distor occured, exitting build process... "); //eslint-disable-line no-console
-    process.exit(1); //eslint-disable-line no-process-exit
-  }
-});
-
-/**
  * Logs error into variable
  * @returns {void}
  */
@@ -43,24 +31,42 @@ var errorHandler = function () {
 
 gulp.task("lint", function () {
   gulp.src([path.common, path.server, path.gulpfile, path.serverTests])
-    .pipe(plumber({
-      errorHandler: errorHandler
-    }))
     .pipe(eslint())
     .pipe(eslint.format())
     .pipe(eslint.failAfterError());
 });
 
-gulp.task("test", function () {
+gulp.task("pre-test", function () {
+  return gulp.src([path.common, path.server])
+    .pipe(istanbul())
+    .pipe(istanbul.hookRequire());
+});
+
+gulp.task("test", ["pre-test"], function (cb) {
   gulp.src(path.serverTests)
-    .pipe(plumber({
-      errorHandler: errorHandler
-    }))
-    .pipe(mocha());
+    .pipe(plumber({ errorHandler: errorHandler }))
+    .pipe(mocha())
+    .pipe(istanbul.writeReports())
+    //.pipe(istanbul.enforceThresholds({ thresholds: { global: 90 } }))
+    .on("end", cb);
 });
 
 gulp.task("watch", function () {
   gulp.watch([path.server, path.serverTests], ["test"]);
+});
+
+/**
+ * This task is here to exit from process with error code.
+ * This way CI server knows that process failed.
+ * It is needed because gulp-plumber forces 0 error code
+ * even when error occurs.
+ */
+gulp.task("checkError", ["test"], function () {
+  console.log("Checking if error occured on the way..."); //eslint-disable-line no-console
+  if (errorOccured === true) {
+    console.log("Err, distor occured, exitting build process... "); //eslint-disable-line no-console
+    process.exit(1); //eslint-disable-line no-process-exit
+  }
 });
 
 gulp.task("default", ["lint", "test", "checkError"]);
