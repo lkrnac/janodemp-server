@@ -5,10 +5,11 @@ var eslint = require("gulp-eslint");
 var plumber = require("gulp-plumber");
 var mocha = require("gulp-mocha");
 
-var paths = {
+var path = {
   dist: "dist",
   server: "server/**/*.js",
   common: "common/**/*.js",
+  gulpfile: "gulpfile.js",
   serverTests: "test/**/*.js",
   package: [
     "./!(node_modules|dist)/**/*",
@@ -41,7 +42,7 @@ var errorHandler = function () {
 };
 
 gulp.task("lint", function () {
-  gulp.src([paths.common, paths.server, paths.serverTests])
+  gulp.src([path.common, path.server, path.gulpfile, path.serverTests])
     .pipe(plumber({
       errorHandler: errorHandler
     }))
@@ -51,7 +52,7 @@ gulp.task("lint", function () {
 });
 
 gulp.task("test", function () {
-  gulp.src(paths.serverTests)
+  gulp.src(path.serverTests)
     .pipe(plumber({
       errorHandler: errorHandler
     }))
@@ -59,7 +60,7 @@ gulp.task("test", function () {
 });
 
 gulp.task("watch", function () {
-  gulp.watch([paths.server, paths.serverTests], ["test"]);
+  gulp.watch([path.server, path.serverTests], ["test"]);
 });
 
 gulp.task("default", ["lint", "test", "checkError"]);
