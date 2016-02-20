@@ -62,9 +62,8 @@ gulp.task("watch", function () {
  * even when error occurs.
  */
 gulp.task("checkError", ["test"], function () {
-  console.log("Checking if error occured on the way..."); //eslint-disable-line no-console
   if (errorOccured === true) {
-    console.log("Err, distor occured, exitting build process... "); //eslint-disable-line no-console
+    console.log("Error occurred, exiting build process... "); //eslint-disable-line no-console
     process.exit(1); //eslint-disable-line no-process-exit
   }
 });
