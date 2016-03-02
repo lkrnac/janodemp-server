@@ -11,6 +11,8 @@ var path = {
   dist: "dist",
   server: "server/**/*.js",
   common: "common/**/*.js",
+  commonModels: "common/**/*.json",
+  serverModels: "server/**/*.json",
   gulpfile: "gulpfile.js",
   serverTests: "test/**/*.js",
   package: [
@@ -62,7 +64,13 @@ gulp.task("test", ["pre-test"], function (cb) {
 });
 
 gulp.task("watch", function () {
-  gulp.watch([path.server, path.serverTests], ["test"]);
+  gulp.watch([
+    path.server,
+    path.serverTests,
+    path.serverModels,
+    path.common,
+    path.commonModels
+  ], ["test"]);
 });
 
 gulp.task("coveralls", ["test", "checkError"], function () {
