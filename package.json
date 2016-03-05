@@ -10,6 +10,7 @@
   "dependencies": {
     "compression": "^1.6.0",
     "cors": "^2.7.1",
+    "fs-extra": "^0.26.5",
     "loopback": "^2.22.2",
     "loopback-boot": "^2.14.0",
     "loopback-datasource-juggler": "^2.41.1",

@@ -6,15 +6,18 @@ var plumber = require("gulp-plumber");
 var mocha = require("gulp-mocha");
 var istanbul = require("gulp-istanbul");
 var coveralls = require("gulp-coveralls");
+var fsExtra = require("fs-extra");
+var path = require("path");
 
-var path = {
+var srcPath = {
   dist: "dist",
   server: "server/**/*.js",
   common: "common/**/*.js",
   commonModels: "common/**/*.json",
   serverModels: "server/**/*.json",
   gulpfile: "gulpfile.js",
-  serverTests: "test/**/*.js",
+  serverTests: "test/**/*.spec.js",
+  serverBootTests: "test/**/*.boot.js",
   package: [
     "./!(node_modules|dist)/**/*",
     "package.json"
@@ -33,20 +36,45 @@ var errorHandler = function () {
 };
 
 gulp.task("lint", function () {
-  gulp.src([path.common, path.server, path.gulpfile, path.serverTests])
+  gulp.src([
+    srcPath.common,
+    srcPath.server,
+    srcPath.gulpfile,
+    srcPath.serverTests,
+    srcPath.serverBootTests
+  ])
     .pipe(eslint())
     .pipe(eslint.format())
     .pipe(eslint.failAfterError());
 });
 
 gulp.task("pre-test", function () {
-  return gulp.src([path.common, path.server, "!server/server.js"])
+  return gulp.src([srcPath.common, srcPath.server, "!server/server.js"])
     .pipe(istanbul())
     .pipe(istanbul.hookRequire());
 });
 
-gulp.task("test", ["pre-test"], function (cb) {
-  gulp.src(path.serverTests)
+gulp.task("test-boot", ["pre-test"], function (cb) {
+  var dbPath = path.resolve(__dirname, "db.json");
+  var dbPathBckp = path.resolve(__dirname, "db.json.bckp");
+
+  var restoreBackup = function () {
+    fsExtra.removeSync(dbPath);
+    fsExtra.move(dbPathBckp, dbPath, function () {
+      cb(); //execute callback this way to ignore if DB files are missing
+    });
+  };
+
+  fsExtra.move(dbPath, dbPathBckp, function () {
+    gulp.src(srcPath.serverBootTests)
+      .pipe(plumber({ errorHandler: errorHandler }))
+      .pipe(mocha())
+      .on("end", restoreBackup);
+  });
+});
+
+gulp.task("test", ["test-boot"], function (cb) {
+  gulp.src(srcPath.serverTests)
     .pipe(plumber({ errorHandler: errorHandler }))
     .pipe(mocha())
     .pipe(istanbul.writeReports())
@@ -54,8 +82,8 @@ gulp.task("test", ["pre-test"], function (cb) {
       thresholds: {
         global: {
           statements: 90,
-          branches: 50,
-          functions: 95,
+          branches: 66,
+          functions: 100,
           lines: 90
         }
       }
@@ -65,11 +93,11 @@ gulp.task("test", ["pre-test"], function (cb) {
 
 gulp.task("watch", function () {
   gulp.watch([
-    path.server,
-    path.serverTests,
-    path.serverModels,
-    path.common,
-    path.commonModels
+    srcPath.server,
+    srcPath.serverTests,
+    srcPath.serverModels,
+    srcPath.common,
+    srcPath.commonModels
   ], ["test"]);
 });
 
