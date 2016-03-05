@@ -1,7 +1,6 @@
-"use strict";
 /* eslint-disable no-console */
 
-var printCreatedUsers = function (err, users) {
+const printCreatedUsers = (err, users) => {
   if (err) {
     throw err;
   }
@@ -9,14 +8,14 @@ var printCreatedUsers = function (err, users) {
   console.log("Created users:", users);
 };
 
-var users = [
+const users = [
   {username: "admin", email: "admin@janodemp.net", password: "janodemp-default"}
 ];
 
-module.exports = function (app) {
-  var User = app.models.user;
+module.exports = (app) => {
+  const User = app.models.user;
 
-  User.exists(1, function (err1, exists) {
+  User.exists(1, (err1, exists) => {
     if (err1) {
       throw err1;
     }

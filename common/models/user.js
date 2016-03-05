@@ -1,5 +1,2 @@
-"use strict";
-
-module.exports = function (User) { //eslint-disable-line no-unused-vars
-
+module.exports = (User) => { //eslint-disable-line no-unused-vars
 };

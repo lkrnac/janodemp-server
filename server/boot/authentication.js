@@ -1,6 +1,4 @@
-"use strict";
-
-module.exports = function enableAuthentication(server) {
+module.exports = (server) => {
   // enable authentication
   server.enableAuth();
 };

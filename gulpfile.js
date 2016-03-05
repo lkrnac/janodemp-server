@@ -1,15 +1,13 @@
-"use strict";
+const gulp = require("gulp");
+const eslint = require("gulp-eslint");
+const plumber = require("gulp-plumber");
+const mocha = require("gulp-mocha");
+const istanbul = require("gulp-istanbul");
+const coveralls = require("gulp-coveralls");
+const fsExtra = require("fs-extra");
+const path = require("path");
 
-var gulp = require("gulp");
-var eslint = require("gulp-eslint");
-var plumber = require("gulp-plumber");
-var mocha = require("gulp-mocha");
-var istanbul = require("gulp-istanbul");
-var coveralls = require("gulp-coveralls");
-var fsExtra = require("fs-extra");
-var path = require("path");
-
-var srcPath = {
+const srcPath = {
   dist: "dist",
   server: "server/**/*.js",
   common: "common/**/*.js",
@@ -24,18 +22,18 @@ var srcPath = {
   ]
 };
 
-var errorOccured = false;
+var errorOccurred = false; //eslint-disable-line no-var
 
 /**
  * Logs error into variable
  * @returns {void}
  */
-var errorHandler = function () {
-  console.log("Error occured... "); //eslint-disable-line no-console
-  errorOccured = true;
+const watchErrorHandler = () => {
+  console.log("Error occurred... "); //eslint-disable-line no-console
+  errorOccurred = true;
 };
 
-gulp.task("lint", function () {
+gulp.task("lint", () => {
   gulp.src([
     srcPath.common,
     srcPath.server,
@@ -48,34 +46,34 @@ gulp.task("lint", function () {
     .pipe(eslint.failAfterError());
 });
 
-gulp.task("pre-test", function () {
+gulp.task("pre-test", () => {
   return gulp.src([srcPath.common, srcPath.server, "!server/server.js"])
     .pipe(istanbul())
     .pipe(istanbul.hookRequire());
 });
 
-gulp.task("test-boot", ["pre-test"], function (cb) {
-  var dbPath = path.resolve(__dirname, "db.json");
-  var dbPathBckp = path.resolve(__dirname, "db.json.bckp");
+gulp.task("test-boot", ["pre-test"], (cb) => {
+  const dbPath = path.resolve(__dirname, "db.json");
+  const dbPathBckp = path.resolve(__dirname, "db.json.bckp");
 
-  var restoreBackup = function () {
+  const restoreBackup = function () {
     fsExtra.removeSync(dbPath);
-    fsExtra.move(dbPathBckp, dbPath, function () {
-      cb(); //execute callback this way to ignore if DB files are missing
+    fsExtra.move(dbPathBckp, dbPath, () => {
+      cb(); //execute callback this way to ignore if files is missing
     });
   };
 
-  fsExtra.move(dbPath, dbPathBckp, function () {
+  fsExtra.move(dbPath, dbPathBckp, () => {
     gulp.src(srcPath.serverBootTests)
-      .pipe(plumber({ errorHandler: errorHandler }))
+      .pipe(plumber({ errorHandler: watchErrorHandler }))
       .pipe(mocha())
       .on("end", restoreBackup);
   });
 });
 
-gulp.task("test", ["test-boot"], function (cb) {
+gulp.task("test", ["test-boot"], (cb) => {
   gulp.src(srcPath.serverTests)
-    .pipe(plumber({ errorHandler: errorHandler }))
+    .pipe(plumber({ errorHandler: watchErrorHandler }))
     .pipe(mocha())
     .pipe(istanbul.writeReports())
     .pipe(istanbul.enforceThresholds({
@@ -91,7 +89,7 @@ gulp.task("test", ["test-boot"], function (cb) {
     .on("end", cb);
 });
 
-gulp.task("watch", function () {
+gulp.task("watch", () => {
   gulp.watch([
     srcPath.server,
     srcPath.serverTests,
@@ -101,7 +99,7 @@ gulp.task("watch", function () {
   ], ["test"]);
 });
 
-gulp.task("coveralls", ["test", "checkError"], function () {
+gulp.task("coveralls", ["test", "checkError"], () => {
   return gulp.src("./coverage/lcov.info")
     .pipe(coveralls());
 });
@@ -111,9 +109,11 @@ gulp.task("coveralls", ["test", "checkError"], function () {
  * This way CI server knows that process failed.
  * It is needed because gulp-plumber forces 0 error code
  * even when error occurs.
+ *
+ * More info: https://lkrnac.net/blog/2014/10/watch-file-changes-propagate-errors-gulp
  */
-gulp.task("checkError", ["test"], function () {
-  if (errorOccured === true) {
+gulp.task("checkError", ["test"], () => {
+  if (errorOccurred === true) {
     console.log("Error occurred, exiting build process... "); //eslint-disable-line no-console
     process.exit(1); //eslint-disable-line no-process-exit
   }
