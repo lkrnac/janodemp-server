@@ -1,12 +1,39 @@
 const gulp = require("gulp");
 const coveralls = require("gulp-coveralls");
+const istanbul = require("gulp-istanbul");
 
 const gulpfileError = require("./gulp/gulpfile-error");
 
-//import all Gulp tasks from following files
-require("./gulp/gulpfile-server");
+//import also all Gulp tasks from following files
+const serverPath = require("./gulp/gulpfile-server").serverPath;
 
-gulp.task("coveralls", ["test", "check-error"], () => {
+const instrumentedFiles = [serverPath.common, serverPath.server, "!server/server.js"];
+
+gulp.task("pre-test", () => {
+  return gulp.src(instrumentedFiles)
+    .pipe(istanbul())
+    .pipe(istanbul.hookRequire());
+});
+
+gulp.task("test", ["test-server"]);
+
+gulp.task("write-coverage", ["test"], (cb) => {
+  gulp.src(instrumentedFiles)
+    .pipe(istanbul.writeReports())
+    .pipe(istanbul.enforceThresholds({
+      thresholds: {
+        global: {
+          statements: 90,
+          branches: 66,
+          functions: 100,
+          lines: 90
+        }
+      }
+    }))
+    .on("end", cb);
+});
+
+gulp.task("coveralls", ["write-coverage", "check-error"], () => {
   return gulp.src("./coverage/lcov.info")
     .pipe(coveralls());
 });
@@ -27,6 +54,5 @@ gulp.task("check-error", ["test-server"], () => {
 });
 
 gulp.task("lint", ["lint-server"]);
-gulp.task("test", ["test-server"]);
-gulp.task("default", ["lint", "test", "check-error"]);
+gulp.task("default", ["lint", "write-coverage", "check-error"]);
 gulp.task("build", ["default", "coveralls"]);

@@ -2,14 +2,13 @@ const gulp = require("gulp");
 const eslint = require("gulp-eslint");
 const plumber = require("gulp-plumber");
 const mocha = require("gulp-mocha");
-const istanbul = require("gulp-istanbul");
 const fsExtra = require("fs-extra");
 const fs = require("fs");
 const path = require("path");
 
 const gulpfileError = require("./gulpfile-error");
 
-const srcPath = {
+const serverPath = {
   common: "common/**/*.js",
   commonModels: "common/**/*.json",
   server: "server/**/*.js",
@@ -22,24 +21,17 @@ const srcPath = {
 
 gulp.task("lint-server", () => {
   gulp.src([
-    srcPath.common,
-    srcPath.server,
-    srcPath.gulpfileMain,
-    srcPath.gulpfiles,
-    srcPath.serverTests,
-    srcPath.serverBootTests
+    serverPath.common,
+    serverPath.server,
+    serverPath.gulpfileMain,
+    serverPath.gulpfiles,
+    serverPath.serverTests,
+    serverPath.serverBootTests
   ])
     .pipe(eslint())
     .pipe(eslint.format())
     .pipe(eslint.failAfterError());
 });
-
-gulp.task("pre-test", () => {
-  return gulp.src([srcPath.common, srcPath.server, "!server/server.js"])
-    .pipe(istanbul())
-    .pipe(istanbul.hookRequire());
-});
-
 
 gulp.task("test-server-boot", ["pre-test"], (cb) => {
   const dbPath = path.resolve(__dirname, "../db.json");
@@ -57,7 +49,7 @@ gulp.task("test-server-boot", ["pre-test"], (cb) => {
   };
 
   fsExtra.move(dbPath, dbPathBckp, () => {
-    gulp.src(srcPath.serverBootTests)
+    gulp.src(serverPath.serverBootTests)
       .pipe(plumber({ errorHandler: gulpfileError.watchErrorHandler }))
       .pipe(mocha())
       .on("end", restoreBackup);
@@ -65,30 +57,21 @@ gulp.task("test-server-boot", ["pre-test"], (cb) => {
 });
 
 gulp.task("test-server", ["test-server-boot"], (cb) => {
-  gulp.src(srcPath.serverTests)
+  gulp.src(serverPath.serverTests)
     .pipe(plumber({ errorHandler: gulpfileError.watchErrorHandler }))
     .pipe(mocha())
-    .pipe(istanbul.writeReports())
-    .pipe(istanbul.enforceThresholds({
-      thresholds: {
-        global: {
-          statements: 90,
-          branches: 66,
-          functions: 100,
-          lines: 90
-        }
-      }
-    }))
     .on("end", cb);
 });
 
 gulp.task("watch", () => {
   gulp.watch([
-    srcPath.server,
-    srcPath.serverTests,
-    srcPath.serverBootTests,
-    srcPath.serverModels,
-    srcPath.common,
-    srcPath.commonModels
+    serverPath.server,
+    serverPath.serverTests,
+    serverPath.serverBootTests,
+    serverPath.serverModels,
+    serverPath.common,
+    serverPath.commonModels
   ], ["test-server"]);
 });
+
+module.exports.serverPath = serverPath;
