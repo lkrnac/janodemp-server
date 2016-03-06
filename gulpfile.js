@@ -8,5 +8,6 @@ gulp.task("coveralls", ["test", "checkError"], () => {
     .pipe(coveralls());
 });
 
+gulp.task("lint", ["lint-server"]);
 gulp.task("default", ["lint", "test", "checkError"]);
 gulp.task("build", ["default", "coveralls"]);

@@ -29,7 +29,7 @@ const watchErrorHandler = () => {
   errorOccurred = true;
 };
 
-gulp.task("lint", () => {
+gulp.task("lint-server", () => {
   gulp.src([
     srcPath.common,
     srcPath.server,
