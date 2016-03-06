@@ -74,4 +74,4 @@ gulp.task("watch", () => {
   ], ["test-server"]);
 });
 
-module.exports.serverPath = serverPath;
+module.exports.serverSources = [serverPath.common, serverPath.server, "!server/server.js"];

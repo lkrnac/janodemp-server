@@ -5,12 +5,13 @@ const istanbul = require("gulp-istanbul");
 const gulpfileError = require("./gulp/gulpfile-error");
 
 //import also all Gulp tasks from following files
-const serverPath = require("./gulp/gulpfile-server").serverPath;
+const serverSources = require("./gulp/gulpfile-server").serverSources;
+const clientSources = require("./gulp/gulpfile-client").clientSources;
 
-const instrumentedFiles = [serverPath.common, serverPath.server, "!server/server.js"];
+const sources = serverSources.concat(clientSources);
 
 gulp.task("pre-test", () => {
-  return gulp.src(instrumentedFiles)
+  return gulp.src(sources)
     .pipe(istanbul())
     .pipe(istanbul.hookRequire());
 });
@@ -18,7 +19,7 @@ gulp.task("pre-test", () => {
 gulp.task("test", ["test-server"]);
 
 gulp.task("write-coverage", ["test"], (cb) => {
-  gulp.src(instrumentedFiles)
+  gulp.src(sources)
     .pipe(istanbul.writeReports())
     .pipe(istanbul.enforceThresholds({
       thresholds: {
