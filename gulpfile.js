@@ -18,7 +18,7 @@ gulp.task("pre-test", () => {
 
 gulp.task("test", ["test-server"]);
 
-gulp.task("write-coverage", ["test"], (cb) => {
+gulp.task("write-coverage", ["test", "buildClient"], (cb) => {
   gulp.src(sources)
     .pipe(istanbul.writeReports())
     .pipe(istanbul.enforceThresholds({
