@@ -110,7 +110,7 @@ gulp.task("watch", () => {
  *
  * More info: https://lkrnac.net/blog/2014/10/watch-file-changes-propagate-errors-gulp
  */
-gulp.task("checkError", ["test"], () => {
+gulp.task("check-error", ["test"], () => {
   if (errorOccurred === true) {
     console.log("Error occurred, exiting build process... "); //eslint-disable-line no-console
     process.exit(1); //eslint-disable-line no-process-exit
