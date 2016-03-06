@@ -8,19 +8,14 @@ const fs = require("fs");
 const path = require("path");
 
 const srcPath = {
-  dist: "dist",
-  server: "server/**/*.js",
   common: "common/**/*.js",
   commonModels: "common/**/*.json",
+  server: "server/**/*.js",
   serverModels: "server/**/*.json",
-  gulpfileMain: "gulpfile.js",
-  gulpfiles: "gulp/**/*.js",
   serverTests: "test-server/**/*.spec.js",
   serverBootTests: "test-server/**/*.boot.js",
-  package: [
-    "./!(node_modules|dist)/**/*",
-    "package.json"
-  ]
+  gulpfileMain: "gulpfile.js",
+  gulpfiles: "gulp/**/*.js"
 };
 
 var errorOccurred = false; //eslint-disable-line no-var
