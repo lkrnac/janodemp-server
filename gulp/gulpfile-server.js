@@ -7,6 +7,8 @@ const fsExtra = require("fs-extra");
 const fs = require("fs");
 const path = require("path");
 
+const gulpfileError = require("./gulpfile-error");
+
 const srcPath = {
   common: "common/**/*.js",
   commonModels: "common/**/*.json",
@@ -16,17 +18,6 @@ const srcPath = {
   serverBootTests: "test-server/**/*.boot.js",
   gulpfileMain: "gulpfile.js",
   gulpfiles: "gulp/**/*.js"
-};
-
-var errorOccurred = false; //eslint-disable-line no-var
-
-/**
- * Logs error into variable
- * @returns {void}
- */
-const watchErrorHandler = () => {
-  console.log("Error occurred... "); //eslint-disable-line no-console
-  errorOccurred = true;
 };
 
 gulp.task("lint-server", () => {
@@ -50,7 +41,7 @@ gulp.task("pre-test", () => {
 });
 
 
-gulp.task("test-boot", ["pre-test"], (cb) => {
+gulp.task("test-server-boot", ["pre-test"], (cb) => {
   const dbPath = path.resolve(__dirname, "../db.json");
   const dbPathBckp = path.resolve(__dirname, "../db.json.bckp");
 
@@ -67,15 +58,15 @@ gulp.task("test-boot", ["pre-test"], (cb) => {
 
   fsExtra.move(dbPath, dbPathBckp, () => {
     gulp.src(srcPath.serverBootTests)
-      .pipe(plumber({ errorHandler: watchErrorHandler }))
+      .pipe(plumber({ errorHandler: gulpfileError.watchErrorHandler }))
       .pipe(mocha())
       .on("end", restoreBackup);
   });
 });
 
-gulp.task("test", ["test-boot"], (cb) => {
+gulp.task("test-server", ["test-server-boot"], (cb) => {
   gulp.src(srcPath.serverTests)
-    .pipe(plumber({ errorHandler: watchErrorHandler }))
+    .pipe(plumber({ errorHandler: gulpfileError.watchErrorHandler }))
     .pipe(mocha())
     .pipe(istanbul.writeReports())
     .pipe(istanbul.enforceThresholds({
@@ -99,20 +90,5 @@ gulp.task("watch", () => {
     srcPath.serverModels,
     srcPath.common,
     srcPath.commonModels
-  ], ["test"]);
-});
-
-/**
- * This task is here to exit from process with error code.
- * This way CI server knows that process failed.
- * It is needed because gulp-plumber forces 0 error code
- * even when error occurs.
- *
- * More info: https://lkrnac.net/blog/2014/10/watch-file-changes-propagate-errors-gulp
- */
-gulp.task("check-error", ["test"], () => {
-  if (errorOccurred === true) {
-    console.log("Error occurred, exiting build process... "); //eslint-disable-line no-console
-    process.exit(1); //eslint-disable-line no-process-exit
-  }
+  ], ["test-server"]);
 });
