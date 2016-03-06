@@ -13,9 +13,10 @@ const srcPath = {
   common: "common/**/*.js",
   commonModels: "common/**/*.json",
   serverModels: "server/**/*.json",
-  gulpfile: "gulpfile.js",
-  serverTests: "test/**/*.spec.js",
-  serverBootTests: "test/**/*.boot.js",
+  gulpfileMain: "gulpfile.js",
+  gulpfiles: "gulp/**/*.js",
+  serverTests: "test-server/**/*.spec.js",
+  serverBootTests: "test-server/**/*.boot.js",
   package: [
     "./!(node_modules|dist)/**/*",
     "package.json"
@@ -37,7 +38,8 @@ gulp.task("lint", () => {
   gulp.src([
     srcPath.common,
     srcPath.server,
-    srcPath.gulpfile,
+    srcPath.gulpfileMain,
+    srcPath.gulpfiles,
     srcPath.serverTests,
     srcPath.serverBootTests
   ])
@@ -98,6 +100,7 @@ gulp.task("watch", () => {
   gulp.watch([
     srcPath.server,
     srcPath.serverTests,
+    srcPath.serverBootTests,
     srcPath.serverModels,
     srcPath.common,
     srcPath.commonModels
