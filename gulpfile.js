@@ -1,6 +1,7 @@
 const gulp = require("gulp");
 const coveralls = require("gulp-coveralls");
-const istanbul = require("gulp-istanbul");
+const istanbul = require("gulp-babel-istanbul");
+const isparta = require("isparta");
 
 const gulpfileError = require("./gulp/gulpfile-error");
 
@@ -10,22 +11,26 @@ const clientSources = require("./gulp/gulpfile-client").clientSources;
 
 const sources = serverSources.concat(clientSources);
 
+
 gulp.task("pre-test", () => {
   return gulp.src(sources)
-    .pipe(istanbul())
+    .pipe(istanbul({
+      instrumenter: isparta.Instrumenter,
+      includeUntested: true
+    }))
     .pipe(istanbul.hookRequire());
 });
 
-gulp.task("test", ["test-server"]);
+gulp.task("test", ["test-server", "test-client"]);
 
-gulp.task("write-coverage", ["test", "buildClient"], (cb) => {
+gulp.task("write-coverage", ["test", "build-client"], (cb) => {
   gulp.src(sources)
     .pipe(istanbul.writeReports())
     .pipe(istanbul.enforceThresholds({
       thresholds: {
         global: {
           statements: 90,
-          branches: 66,
+          branches: 100,
           functions: 100,
           lines: 90
         }
