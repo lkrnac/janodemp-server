@@ -39,7 +39,7 @@ gulp.task("test-server-boot", ["pre-test"], (cb) => {
 
   const restoreBackup = () => {
     fs.stat(dbPathBckp, (err, stats) => {
-      if (stats.isFile()) {
+      if (stats && stats.isFile()) {
         fsExtra.removeSync(dbPath);
         fsExtra.move(dbPathBckp, dbPath, cb);
       } else {
