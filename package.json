@@ -4,6 +4,7 @@
   "main": "server/server.js",
   "license": "GNU GPL v3",
   "scripts": {
+    "start": "node .",
     "test": "gulp test",
     "build": "gulp"
   },
