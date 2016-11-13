@@ -5,6 +5,7 @@ const mocha = require("gulp-mocha");
 const istanbul = require("gulp-istanbul");
 const coveralls = require("gulp-coveralls");
 const fsExtra = require("fs-extra");
+const fs = require("fs");
 const path = require("path");
 
 const srcPath = {
@@ -54,21 +55,21 @@ gulp.task("pre-test", () => {
 
 
 gulp.task("test-boot", ["pre-test"], (cb) => {
-  const dbPath = path.resolve(__dirname, "db.json");
-  const dbPathBckp = path.resolve(__dirname, "db.json.bckp");
-  console.log(`db file path: ${dbPath}`); //eslint-disable-line no-console
-  console.log(`db file backup: ${dbPathBckp}`); //eslint-disable-line no-console
+  const dbPath = path.resolve(__dirname, "../db.json");
+  const dbPathBckp = path.resolve(__dirname, "../db.json.bckp");
 
-  const restoreBackup = function () {
-    fsExtra.removeSync(dbPath);
-    fsExtra.move(dbPathBckp, dbPath, (error) => {
-      console.log(`Error while retrieving from backup: ${error}`); //eslint-disable-line no-console
-      cb(); //execute callback this way to ignore if files is missing
+  const restoreBackup = () => {
+    fs.stat(dbPathBckp, (err, stats) => {
+      if (stats && stats.isFile()) {
+        fsExtra.removeSync(dbPath);
+        fsExtra.move(dbPathBckp, dbPath, cb);
+      } else {
+        return cb();
+      }
     });
   };
 
-  fsExtra.move(dbPath, dbPathBckp, (error) => {
-    console.log(`Error while while backing up: ${error}`); //eslint-disable-line no-console
+  fsExtra.move(dbPath, dbPathBckp, () => {
     gulp.src(srcPath.serverBootTests)
       .pipe(plumber({ errorHandler: watchErrorHandler }))
       .pipe(mocha())
