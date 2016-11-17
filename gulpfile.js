@@ -87,7 +87,7 @@ gulp.task("test", ["test-boot"], (cb) => {
       thresholds: {
         global: {
           statements: 90,
-          branches: 66,
+          branches: 50,
           functions: 100,
           lines: 90
         }
