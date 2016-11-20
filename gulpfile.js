@@ -128,4 +128,3 @@ gulp.task("checkError", ["test"], () => {
 
 gulp.task("default", ["lint", "test", "checkError"]);
 gulp.task("build", ["default", "coveralls"]);
-gulp.task("build-server", ["default"]);
