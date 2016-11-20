@@ -80,16 +80,15 @@ gulp.task("test-boot", ["pre-test"], (cb) => {
 
 gulp.task("test", ["test-boot"], (cb) => {
   gulp.src(srcPath.serverTests)
-    .pipe(plumber({ errorHandler: watchErrorHandler }))
     .pipe(mocha())
     .pipe(istanbul.writeReports())
     .pipe(istanbul.enforceThresholds({
       thresholds: {
         global: {
-          statements: 90,
+          statements: 85,
           branches: 50,
           functions: 100,
-          lines: 90
+          lines: 85
         }
       }
     }))
