@@ -1,3 +1,4 @@
 {
-  "extends": "walmart/configurations/es6-node"
+  "extends": "walmart/configurations/es6-node",
+  "rules": { "quotes": ["error", "single"] }
 }

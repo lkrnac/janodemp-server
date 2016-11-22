@@ -1,26 +1,26 @@
-"use strict";
+'use strict';
 
-const gulp = require("gulp");
-const eslint = require("gulp-eslint");
-const plumber = require("gulp-plumber");
-const mocha = require("gulp-mocha");
-const istanbul = require("gulp-istanbul");
-const coveralls = require("gulp-coveralls");
-const fsExtra = require("fs-extra");
-const path = require("path");
+const gulp = require('gulp');
+const eslint = require('gulp-eslint');
+const plumber = require('gulp-plumber');
+const mocha = require('gulp-mocha');
+const istanbul = require('gulp-istanbul');
+const coveralls = require('gulp-coveralls');
+const fsExtra = require('fs-extra');
+const path = require('path');
 
 const srcPath = {
-  dist: "dist",
-  server: "server/**/*.js",
-  common: "common/**/*.js",
-  commonModels: "common/**/*.json",
-  serverModels: "server/**/*.json",
-  gulpfile: "gulpfile.js",
-  serverTests: "test/**/*.spec.js",
-  serverBootTests: "test/**/*.boot.js",
+  dist: 'dist',
+  server: 'server/**/*.js',
+  common: 'common/**/*.js',
+  commonModels: 'common/**/*.json',
+  serverModels: 'server/**/*.json',
+  gulpfile: 'gulpfile.js',
+  serverTests: 'test/**/*.spec.js',
+  serverBootTests: 'test/**/*.boot.js',
   package: [
-    "./!(node_modules|dist)/**/*",
-    "package.json"
+    './!(node_modules|dist)/**/*',
+    'package.json'
   ]
 };
 
@@ -31,11 +31,11 @@ var errorOccurred = false; //eslint-disable-line no-var
  * @returns {void}
  */
 const watchErrorHandler = () => {
-  console.log("Error occurred... "); //eslint-disable-line no-console
+  console.log('Error occurred... '); //eslint-disable-line no-console
   errorOccurred = true;
 };
 
-gulp.task("lint", () => {
+gulp.task('lint', () => {
   gulp.src([
     srcPath.common,
     srcPath.server,
@@ -48,16 +48,16 @@ gulp.task("lint", () => {
     .pipe(eslint.failAfterError());
 });
 
-gulp.task("pre-test", () => {
-  return gulp.src([srcPath.common, srcPath.server, "!server/server.js"])
+gulp.task('pre-test', () => {
+  return gulp.src([srcPath.common, srcPath.server, '!server/server.js'])
     .pipe(istanbul())
     .pipe(istanbul.hookRequire());
 });
 
 
-gulp.task("test-boot", ["pre-test"], (cb) => {
-  const dbPath = path.resolve(__dirname, "db.json");
-  const dbPathBckp = path.resolve(__dirname, "db.json.bckp");
+gulp.task('test-boot', ['pre-test'], (cb) => {
+  const dbPath = path.resolve(__dirname, 'db.json');
+  const dbPathBckp = path.resolve(__dirname, 'db.json.bckp');
   console.log(`db file path: ${dbPath}`); //eslint-disable-line no-console
   console.log(`db file backup: ${dbPathBckp}`); //eslint-disable-line no-console
 
@@ -74,11 +74,11 @@ gulp.task("test-boot", ["pre-test"], (cb) => {
     gulp.src(srcPath.serverBootTests)
       .pipe(plumber({ errorHandler: watchErrorHandler }))
       .pipe(mocha())
-      .on("end", restoreBackup);
+      .on('end', restoreBackup);
   });
 });
 
-gulp.task("test", ["test-boot"], (cb) => {
+gulp.task('test', ['test-boot'], (cb) => {
   gulp.src(srcPath.serverTests)
     .pipe(mocha())
     .pipe(istanbul.writeReports())
@@ -92,21 +92,21 @@ gulp.task("test", ["test-boot"], (cb) => {
         }
       }
     }))
-    .on("end", cb);
+    .on('end', cb);
 });
 
-gulp.task("watch", () => {
+gulp.task('watch', () => {
   gulp.watch([
     srcPath.server,
     srcPath.serverTests,
     srcPath.serverModels,
     srcPath.common,
     srcPath.commonModels
-  ], ["test"]);
+  ], ['test']);
 });
 
-gulp.task("coveralls", ["test", "checkError"], () => {
-  return gulp.src("./coverage/lcov.info")
+gulp.task('coveralls', ['test', 'checkError'], () => {
+  return gulp.src('./coverage/lcov.info')
     .pipe(coveralls());
 });
 
@@ -118,12 +118,12 @@ gulp.task("coveralls", ["test", "checkError"], () => {
  *
  * More info: https://lkrnac.net/blog/2014/10/watch-file-changes-propagate-errors-gulp
  */
-gulp.task("checkError", ["test"], () => {
+gulp.task('checkError', ['test'], () => {
   if (errorOccurred === true) {
-    console.log("Error occurred, exiting build process... "); //eslint-disable-line no-console
+    console.log('Error occurred, exiting build process... '); //eslint-disable-line no-console
     process.exit(1); //eslint-disable-line no-process-exit
   }
 });
 
-gulp.task("default", ["lint", "test", "checkError"]);
-gulp.task("build", ["default", "coveralls"]);
+gulp.task('default', ['lint', 'test', 'checkError']);
+gulp.task('build', ['default', 'coveralls']);
