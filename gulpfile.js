@@ -24,14 +24,15 @@ const srcPath = {
   ]
 };
 
-var errorOccurred = false; //eslint-disable-line no-var
+let errorOccurred = false; //eslint-disable-line no-var
 
 /**
- * Logs error into variable
+ * Logs error into variable.
+ * @param {error} error instance
  * @returns {void}
  */
-const watchErrorHandler = () => {
-  console.log('Error occurred... '); //eslint-disable-line no-console
+const watchErrorHandler = (error) => {
+  console.log('Error occurred... ', error); //eslint-disable-line no-console
   errorOccurred = true;
 };
 
