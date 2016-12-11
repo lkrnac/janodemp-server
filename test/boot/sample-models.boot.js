@@ -1,30 +1,14 @@
 /* eslint-disable no-magic-numbers */
 
-const app = require('../../server/server');
-const request = require('supertest');
 const assert = require('assert');
-
-const json = (verb, url) => {
-  return request(app)[verb](url)
-      .set('Content-Type', 'application/json')
-      .set('Accept', 'application/json')
-      .expect('Content-Type', /json/);
-};
+const server = require('../test-utils/server-test-helpter');
 
 describe('Application', () => {
-  before((done) => {
-    require('./../start-server');
-    done();
-  });
-
-  after((done) => {
-    app.removeAllListeners('started');
-    app.removeAllListeners('loaded');
-    done();
-  });
+  before(server.start);
+  after(server.stop);
 
   it('should create admin user at start if doesn\'t exist', (done) => {
-    json('post', '/api/users/login')
+    server.json('post', '/api/users/login')
       .send({
         username: 'admin',
         password: 'janodemp-default'
@@ -35,7 +19,7 @@ describe('Application', () => {
         assert(accessToken, 'must have an access token');
         assert.equal(response.body.userId, 1);
 
-        json('get', `/api/users?access_token=${accessToken}`)
+        server.json('get', `/api/users?access_token=${accessToken}`)
           .send()
           .expect(200, (error2, response2) => {
             assert(typeof response2.body === 'object');
