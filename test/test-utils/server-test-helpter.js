@@ -20,6 +20,12 @@ const stop = (done) => {
   done();
 };
 
+/*
+{
+  "username": "admin",
+  "password": "janodemp-default"
+}
+ */
 const authenticated = (action) => {
   json('post', '/api/users/login')
     .send({
