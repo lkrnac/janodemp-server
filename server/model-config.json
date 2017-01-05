@@ -36,5 +36,9 @@
   "user": {
     "dataSource": "db",
     "public": true
+  },
+  "playlist": {
+    "dataSource": null,
+    "public": true
   }
 }

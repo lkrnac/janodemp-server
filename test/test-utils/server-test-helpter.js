@@ -1,9 +1,11 @@
 const app = require('../../server/server');
-const request = require('supertest');
+const supertest = require('supertest');
 const assert = require('assert');
 
+const request = (verb, url) => supertest(app)[verb](url);
+
 const json = (verb, url) => {
-  return request(app)[verb](url)
+  return request(verb, url)
     .set('Content-Type', 'application/json')
     .set('Accept', 'application/json')
     .expect('Content-Type', /json/);
@@ -46,3 +48,4 @@ exports.json = json;
 exports.start = start;
 exports.stop = stop;
 exports.authenticated = authenticated;
+exports.request = request;
