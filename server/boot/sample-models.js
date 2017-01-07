@@ -1,16 +1,16 @@
 /* eslint-disable no-console */
-'use strict';
+"use strict";
 
 const printCreatedUsers = (err, users) => {
   if (err) {
     throw err;
   }
 
-  console.log('Created users:', users);
+  console.log("Created users:", users);
 };
 
 const users = [
-  {username: 'admin', email: 'admin@janodemp.net', password: 'janodemp-default'}
+  {username: "admin", email: "admin@janodemp.net", password: "janodemp-default"}
 ];
 
 module.exports = (app) => {
